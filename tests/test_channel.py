@@ -1,8 +1,8 @@
 from asynctest.mock import patch
 
-from lib.data.message import Message
 from tests.unittest.base_channel import TestChannel
 from tests.unittest.mock_class import StrContains
+from lib.data.message import Message
 
 # Needs to be imported last
 from .. import library
