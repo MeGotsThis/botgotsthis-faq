@@ -43,8 +43,9 @@ async def commandSetGameFaq(args: ChatCommandArgs) -> bool:
 {args.chat.channel} needs to have a game set on Twitch before this command \
 can be used''')
 
-    result: bool = await library.setFaq(args.database, args.chat.channel,
-                                        args.message.query)
+    result: bool = await library.setGameFaq(
+        args.database, args.chat.channel, args.chat.twitchGame,
+        args.message.query)
     if result:
         if not args.message.query:
             args.chat.send(f'''\

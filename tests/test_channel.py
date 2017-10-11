@@ -132,3 +132,65 @@ class TestChannelFaq(TestChannel):
             self.database, self.channel.channel, '')
         self.assertFalse(mock_gamefaq.called)
         self.channel.send.assert_called_once_with(StrContains('Error', 'FAQ'))
+
+    @patch(library.__name__ + '.setGameFaq')
+    @patch(library.__name__ + '.setFaq')
+    async def test_setgamefaq_not_moderator(self, mock_faq, mock_gamefaq):
+        self.permissionSet['moderator'] = False
+        self.channel.twitchGame = 'Kappa'
+        mock_faq.return_value = False
+        mock_gamefaq.return_value = False
+        message = Message('!setgamefaq Keepo')
+        args = self.args._replace(message=message)
+        self.assertIs(await channel.commandSetGameFaq(args), False)
+        self.assertFalse(mock_faq.called)
+        self.assertFalse(mock_gamefaq.called)
+        self.assertFalse(self.channel.send.called)
+
+    @patch(library.__name__ + '.setGameFaq')
+    @patch(library.__name__ + '.setFaq')
+    async def test_setgamefaq(self, mock_faq, mock_gamefaq):
+        self.permissionSet['moderator'] = True
+        self.channel.twitchGame = 'Kappa'
+        mock_faq.return_value = False
+        mock_gamefaq.return_value = True
+        message = Message('!setgamefaq Keepo')
+        args = self.args._replace(message=message)
+        self.assertIs(await channel.commandSetGameFaq(args), True)
+        mock_gamefaq.assert_called_once_with(
+            self.database, self.channel.channel, 'Kappa', 'Keepo')
+        self.assertFalse(mock_faq.called)
+        self.channel.send.assert_called_once_with(
+            StrContains('game', 'FAQ', 'Kappa', 'Keepo'))
+
+    @patch(library.__name__ + '.setGameFaq')
+    @patch(library.__name__ + '.setFaq')
+    async def test_setgamefaq_empty(self, mock_faq, mock_gamefaq):
+        self.permissionSet['moderator'] = True
+        self.channel.twitchGame = 'Kappa'
+        mock_faq.return_value = False
+        mock_gamefaq.return_value = True
+        message = Message('!setgamefaq')
+        args = self.args._replace(message=message)
+        self.assertIs(await channel.commandSetGameFaq(args), True)
+        mock_gamefaq.assert_called_once_with(
+            self.database, self.channel.channel, 'Kappa', '')
+        self.assertFalse(mock_faq.called)
+        self.channel.send.assert_called_once_with(
+            StrContains('game', 'FAQ', 'unset'))
+
+    @patch(library.__name__ + '.setGameFaq')
+    @patch(library.__name__ + '.setFaq')
+    async def test_setgamefaq_error(self, mock_faq, mock_gamefaq):
+        self.permissionSet['moderator'] = True
+        self.channel.twitchGame = 'Kappa'
+        mock_faq.return_value = False
+        mock_gamefaq.return_value = False
+        message = Message('!setgamefaq')
+        args = self.args._replace(message=message)
+        self.assertIs(await channel.commandSetGameFaq(args), True)
+        mock_gamefaq.assert_called_once_with(
+            self.database, self.channel.channel, 'Kappa', '')
+        self.assertFalse(mock_faq.called)
+        self.channel.send.assert_called_once_with(
+            StrContains('Error', 'game', 'FAQ'))
