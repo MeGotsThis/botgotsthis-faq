@@ -49,7 +49,8 @@ INSERT INTO faq_game VALUES ('megotsthis', 'Kappa', 'Keepo')
         self.assertTrue(
             await library.setFaq(self.database, 'megotsthis', 'FrankerZ'))
         self.assertCountEqual(await self.rows('SELECT * FROM faq'),
-                              [('megotsthis', 'FrankerZ'),])
+                              [('megotsthis', 'FrankerZ'),
+                               ])
 
     async def test_set_faq_empty(self):
         self.assertTrue(
@@ -73,7 +74,8 @@ INSERT INTO faq_game VALUES ('megotsthis', 'Kappa', 'Keepo')
             await library.setGameFaq(self.database, 'megotsthis', 'Kappa',
                                      'FrankerZ'))
         self.assertCountEqual(await self.rows('SELECT * FROM faq_game'),
-                              [('megotsthis', 'Kappa', 'FrankerZ'),])
+                              [('megotsthis', 'Kappa', 'FrankerZ'),
+                               ])
 
     async def test_set_game_faq_empty(self):
         self.assertTrue(
