@@ -1,10 +1,10 @@
 import os
 
-from tests.database.postgres.test_database import TestPostgres
+from tests.database.sqlite.test_database import TestSqlite
 from .base_library import TestDatabaseFaq
 
 
-class TestLibraryFaqSqlite(TestDatabaseFaq, TestPostgres):
+class TestLibraryFaqSqlite(TestDatabaseFaq, TestSqlite):
     async def setUp(self):
         await super().setUp()
         sqlFile = os.path.join(
