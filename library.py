@@ -5,38 +5,38 @@ import aioodbc.cursor  # noqa: F401
 from lib.database import DatabaseMain
 
 
-async def getFaq(database: DatabaseMain,
-                 channel: str) -> Optional[str]:
+async def getFaq(channel: str) -> Optional[str]:
+    db: DatabaseMain
     cursor: aioodbc.cursor.Cursor
-    async with await database.cursor() as cursor:
+    async with DatabaseMain.acquire() as db, await db.cursor() as cursor:
         query: str = 'SELECT faq FROM faq WHERE broadcaster=?'
         await cursor.execute(query, (channel,))
         return (await cursor.fetchone() or [None])[0]
 
 
-async def getGameFaq(database: DatabaseMain,
-                     channel: str,
+async def getGameFaq(channel: str,
                      game: str) -> Optional[str]:
+    db: DatabaseMain
     cursor: aioodbc.cursor.Cursor
-    async with await database.cursor() as cursor:
+    async with DatabaseMain.acquire() as db, await db.cursor() as cursor:
         query: str = '''
 SELECT faq FROM faq_game WHERE broadcaster=? AND twitchGame=?'''
         await cursor.execute(query, (channel, game))
         return (await cursor.fetchone() or [None])[0]
 
 
-async def setFaq(database: DatabaseMain,
-                 channel: str,
+async def setFaq(channel: str,
                  faq: str) -> bool:
+    db: DatabaseMain
     cursor: aioodbc.cursor.Cursor
-    async with await database.cursor() as cursor:
+    async with DatabaseMain.acquire() as db, await db.cursor() as cursor:
         query: str
         params: Tuple[Any, ...]
         if not faq:
             query = 'DELETE FROM faq WHERE broadcaster=?'
             await cursor.execute(query, (channel,))
         else:
-            if database.isSqlite:
+            if db.isSqlite:
                 query = 'REPLACE INTO faq (broadcaster, faq) VALUES (?, ?)'
                 params = channel, faq
             else:
@@ -47,19 +47,19 @@ INSERT INTO faq (broadcaster, faq) VALUES (?, ?)
 '''
                 params = channel, faq, faq
             await cursor.execute(query, params)
-        await database.commit()
+        await db.commit()
     return True
 
 
-async def setGameFaq(database: DatabaseMain,
-                     channel: str,
+async def setGameFaq(channel: str,
                      game: str,
                      faq: str) -> Optional[bool]:
     if not game:
         return None
 
+    db: DatabaseMain
     cursor: aioodbc.cursor.Cursor
-    async with await database.cursor() as cursor:
+    async with DatabaseMain.acquire() as db, await db.cursor() as cursor:
         query: str
         params: Tuple[Any, ...]
         if not faq:
@@ -67,7 +67,7 @@ async def setGameFaq(database: DatabaseMain,
             params = channel, game
             await cursor.execute(query, params)
         else:
-            if database.isSqlite:
+            if db.isSqlite:
                 query = '''
 REPLACE INTO faq_game (broadcaster, twitchGame, faq) VALUES (?, ?, ?)
 '''
@@ -80,5 +80,5 @@ INSERT INTO faq_game (broadcaster, twitchGame, faq) VALUES (?, ?, ?)
 '''
                 params = channel, game, faq, faq
             await cursor.execute(query, params)
-        await database.commit()
+        await db.commit()
     return True

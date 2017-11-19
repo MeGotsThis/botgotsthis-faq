@@ -18,9 +18,9 @@ class TestChannelFaq(TestChannel):
         mock_faq.return_value = None
         mock_gamefaq.return_value = None
         self.assertIs(await channel.commandFaq(self.args), True)
-        mock_faq.assert_called_once_with(self.database, self.channel.channel)
+        mock_faq.assert_called_once_with(self.channel.channel)
         mock_gamefaq.assert_called_once_with(
-            self.database, self.channel.channel, self.channel.twitchGame)
+            self.channel.channel, self.channel.twitchGame)
         self.assertFalse(self.channel.send.called)
 
     @patch(library.__name__ + '.getGameFaq')
@@ -31,9 +31,9 @@ class TestChannelFaq(TestChannel):
         mock_faq.return_value = None
         mock_gamefaq.return_value = None
         self.assertIs(await channel.commandFaq(self.args), True)
-        mock_faq.assert_called_once_with(self.database, self.channel.channel)
+        mock_faq.assert_called_once_with(self.channel.channel)
         mock_gamefaq.assert_called_once_with(
-            self.database, self.channel.channel, self.channel.twitchGame)
+            self.channel.channel, self.channel.twitchGame)
         self.channel.send.assert_called_once_with(
             StrContains('No', '!setfaq', '!setgamefaq'))
 
@@ -45,7 +45,7 @@ class TestChannelFaq(TestChannel):
         mock_faq.return_value = 'Kappa'
         mock_gamefaq.return_value = None
         self.assertIs(await channel.commandFaq(self.args), True)
-        mock_faq.assert_called_once_with(self.database, self.channel.channel)
+        mock_faq.assert_called_once_with(self.channel.channel)
         self.assertFalse(mock_gamefaq.called)
         self.channel.send.assert_called_once_with(StrContains('FAQ', 'Kappa'))
 
@@ -57,9 +57,9 @@ class TestChannelFaq(TestChannel):
         mock_faq.return_value = None
         mock_gamefaq.return_value = 'Kappa'
         self.assertIs(await channel.commandFaq(self.args), True)
-        mock_faq.assert_called_once_with(self.database, self.channel.channel)
+        mock_faq.assert_called_once_with(self.channel.channel)
         mock_gamefaq.assert_called_once_with(
-            self.database, self.channel.channel, self.channel.twitchGame)
+            self.channel.channel, self.channel.twitchGame)
         self.channel.send.assert_called_once_with(StrContains('FAQ', 'Kappa'))
 
     @patch(library.__name__ + '.getGameFaq')
@@ -70,7 +70,7 @@ class TestChannelFaq(TestChannel):
         mock_faq.return_value = 'Kappa'
         mock_gamefaq.return_value = 'FrankerZ'
         self.assertIs(await channel.commandFaq(self.args), True)
-        mock_faq.assert_called_once_with(self.database, self.channel.channel)
+        mock_faq.assert_called_once_with(self.channel.channel)
         self.assertFalse(mock_gamefaq.called)
         self.channel.send.assert_called_once_with(StrContains('FAQ', 'Kappa'))
 
@@ -99,7 +99,7 @@ class TestChannelFaq(TestChannel):
         args = self.args._replace(message=message)
         self.assertIs(await channel.commandSetFaq(args), True)
         mock_faq.assert_called_once_with(
-            self.database, self.channel.channel, 'Kappa')
+            self.channel.channel, 'Kappa')
         self.assertFalse(mock_gamefaq.called)
         self.channel.send.assert_called_once_with(StrContains('FAQ', 'Kappa'))
 
@@ -114,7 +114,7 @@ class TestChannelFaq(TestChannel):
         args = self.args._replace(message=message)
         self.assertIs(await channel.commandSetFaq(args), True)
         mock_faq.assert_called_once_with(
-            self.database, self.channel.channel, '')
+            self.channel.channel, '')
         self.assertFalse(mock_gamefaq.called)
         self.channel.send.assert_called_once_with(StrContains('FAQ', 'unset'))
 
@@ -129,7 +129,7 @@ class TestChannelFaq(TestChannel):
         args = self.args._replace(message=message)
         self.assertIs(await channel.commandSetFaq(args), True)
         mock_faq.assert_called_once_with(
-            self.database, self.channel.channel, '')
+            self.channel.channel, '')
         self.assertFalse(mock_gamefaq.called)
         self.channel.send.assert_called_once_with(StrContains('Error', 'FAQ'))
 
@@ -158,7 +158,7 @@ class TestChannelFaq(TestChannel):
         args = self.args._replace(message=message)
         self.assertIs(await channel.commandSetGameFaq(args), True)
         mock_gamefaq.assert_called_once_with(
-            self.database, self.channel.channel, 'Kappa', 'Keepo')
+            self.channel.channel, 'Kappa', 'Keepo')
         self.assertFalse(mock_faq.called)
         self.channel.send.assert_called_once_with(
             StrContains('game', 'FAQ', 'Kappa', 'Keepo'))
@@ -174,7 +174,7 @@ class TestChannelFaq(TestChannel):
         args = self.args._replace(message=message)
         self.assertIs(await channel.commandSetGameFaq(args), True)
         mock_gamefaq.assert_called_once_with(
-            self.database, self.channel.channel, 'Kappa', '')
+            self.channel.channel, 'Kappa', '')
         self.assertFalse(mock_faq.called)
         self.channel.send.assert_called_once_with(
             StrContains('game', 'FAQ', 'unset'))
@@ -190,7 +190,7 @@ class TestChannelFaq(TestChannel):
         args = self.args._replace(message=message)
         self.assertIs(await channel.commandSetGameFaq(args), True)
         mock_gamefaq.assert_called_once_with(
-            self.database, self.channel.channel, 'Kappa', '')
+            self.channel.channel, 'Kappa', '')
         self.assertFalse(mock_faq.called)
         self.channel.send.assert_called_once_with(
             StrContains('Error', 'game', 'FAQ'))

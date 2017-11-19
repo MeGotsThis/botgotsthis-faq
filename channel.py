@@ -8,11 +8,9 @@ from . import library
 
 @cooldown(timedelta(seconds=15), 'faq', 'moderator')
 async def commandFaq(args: ChatCommandArgs) -> bool:
-    faq: Optional[str] = await library.getFaq(args.database, args.chat.channel)
-
+    faq: Optional[str] = await library.getFaq(args.chat.channel)
     if faq is None:
-        faq = await library.getGameFaq(args.database, args.chat.channel,
-                                       args.chat.twitchGame)
+        faq = await library.getGameFaq(args.chat.channel, args.chat.twitchGame)
 
     if faq:
         args.chat.send(f'FAQ: {faq}')
@@ -24,8 +22,7 @@ No FAQ was set. Use !setfaq or !setgamefaq to set a FAQ''')
 
 @permission('moderator')
 async def commandSetFaq(args: ChatCommandArgs) -> bool:
-    result: bool = await library.setFaq(args.database, args.chat.channel,
-                                        args.message.query)
+    result: bool = await library.setFaq(args.chat.channel, args.message.query)
     if result:
         if not args.message.query:
             args.chat.send('FAQ is now unset')
@@ -44,8 +41,7 @@ async def commandSetGameFaq(args: ChatCommandArgs) -> bool:
 can be used''')
 
     result: bool = await library.setGameFaq(
-        args.database, args.chat.channel, args.chat.twitchGame,
-        args.message.query)
+        args.chat.channel, args.chat.twitchGame, args.message.query)
     if result:
         if not args.message.query:
             args.chat.send(f'''\
